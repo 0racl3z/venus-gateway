@@ -4,11 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"sync"
+	"time"
+
 	"github.com/google/uuid"
 	logging "github.com/ipfs/go-log/v2"
 	"golang.org/x/xerrors"
-	"sync"
-	"time"
 )
 
 var log = logging.Logger("gateway_stream")
@@ -39,7 +40,7 @@ func (e *BaseEventStream) SendRequest(ctx context.Context, channels []*ChannelIn
 	firstChanel := channels[0]
 	respEvent, err := e.sendOnce(ctx, firstChanel, method, payload)
 	if err == nil {
-		return json.Unmarshal(respEvent.Payload, &result)
+		return json.Unmarshal(respEvent.Payload, result)
 	}
 	if len(channels) == 1 {
 		return err
